@@ -39,12 +39,32 @@ MAP_TOPIC     = '/map'
 MAP_FRAME   = 'map'
 ROBOT_FRAME = 'base_footprint'
 
-GOAL_TOL          = 0.25       
-MIN_GOAL_DIST     = 0.6       
-MIN_FRONTIER_SIZE = 4        
-FREE_THRESHOLD    = 50        
-EXPLORE_SPIN      = 0.4        
-GOAL_TIMEOUT      = 25.0        
+GOAL_TOL          = 0.25      # raio de chegada (m)
+MIN_GOAL_DIST     = 1.0       # distância mínima do goal — força commit longo
+MIN_FRONTIER_SIZE = 4         # nº mínimo de células num cluster
+FREE_THRESHOLD    = 50        # célula livre se valor < FREE_THRESHOLD
+EXPLORE_SPIN      = 0.4       # ω quando não há fronteira
+
+# Bias frontal: peso ao escolher célula no setor à frente do robô.
+# Multiplicador do cost: 1.0 à frente, FORWARD_BIAS_MIN atrás.
+# Quanto menor FORWARD_BIAS_MIN, mais o robô evita meia-volta.
+FORWARD_BIAS_MIN = 0.3
+
+# Detector de travado: se em STUCK_WINDOW segundos o robô andou menos
+# que STUCK_DIST metros e ainda há goal pendente, assume bloqueio por
+# obstáculo e reescolhe a fronteira. Em fluxo livre o goal não muda.
+STUCK_WINDOW      = 5.0       # s
+STUCK_DIST        = 0.05      # m
+
+# Quando travamos num goal, esse ponto entra numa blacklist por
+# BLACKLIST_TTL segundos: nenhum goal novo pode cair a menos de
+# BLACKLIST_RADIUS dele. Força o explorador a tentar outra direção.
+BLACKLIST_RADIUS  = 0.7       # m
+BLACKLIST_TTL     = 30.0      # s
+
+# Limite na magnitude da repulsão. Sem isso, paredes a < 0.3 m criam
+# forças >> atração e o robô fica num poço de potencial.
+MAX_REPULSION     = 1.5
 
 
 class FrontierExplorer(Node):
@@ -80,7 +100,14 @@ class FrontierExplorer(Node):
         self.goal_x = None
         self.goal_y = None
         self.goal_count = 0
-        self.last_goal_time = self.get_clock().now()
+
+        # Amostra para o detector de "travado".
+        self.stuck_ref_x    = 0.0
+        self.stuck_ref_y    = 0.0
+        self.stuck_ref_time = self.get_clock().now()
+
+        # [(x, y, expiry_ns), ...] — goals onde o robô travou.
+        self.blacklist = []
 
         # Sim (gz_bridge) usa TwistStamped; TB3 real (turtlebot3_node) usa Twist.
         self.cmd_vel_stamped = bool(
@@ -178,7 +205,14 @@ class FrontierExplorer(Node):
 
         dx, dy = self.x - ox, self.y - oy
         scalar = self.kr * (1.0 / d_min - 1.0 / self.d_star) / (d_min ** 3)
-        return scalar * np.array([dx, dy])
+        rep = scalar * np.array([dx, dy])
+
+        # Cap: paredes a < 0.3 m geram forças absurdas que dominam a
+        # atração e prendem o robô. Limita pela magnitude.
+        mag = float(np.hypot(rep[0], rep[1]))
+        if mag > MAX_REPULSION:
+            rep *= MAX_REPULSION / mag
+        return rep
 
     def find_frontier_goal(self):
         if self.map_data is None:
@@ -207,19 +241,45 @@ class FrontierExplorer(Node):
         rows, cols = np.where(frontier)
         wx = self.map_origin_x + (cols + 0.5) * self.map_resolution
         wy = self.map_origin_y + (rows + 0.5) * self.map_resolution
-        d  = np.hypot(wx - self.x, wy - self.y)
+        dx = wx - self.x
+        dy = wy - self.y
+        d  = np.hypot(dx, dy)
 
         cluster_size = sizes[labels[rows, cols]].astype(float)
 
+        # Blacklist: descarta entradas expiradas e exclui células
+        # próximas dos goals travados.
+        now_ns = self.get_clock().now().nanoseconds
+        self.blacklist = [b for b in self.blacklist if b[2] > now_ns]
+        outside_blacklist = np.ones_like(d, dtype=bool)
+        for bx, by, _ in self.blacklist:
+            outside_blacklist &= np.hypot(wx - bx, wy - by) >= BLACKLIST_RADIUS
+
         far_enough = d >= MIN_GOAL_DIST
         big_enough = cluster_size >= MIN_FRONTIER_SIZE
-        valid = big_enough & far_enough
+        valid = big_enough & far_enough & outside_blacklist
+        if not np.any(valid):
+            valid = far_enough & outside_blacklist
         if not np.any(valid):
             valid = far_enough
         if not np.any(valid):
-            return None            
+            return None
 
-        cost = np.where(valid, d / np.log1p(cluster_size), np.inf)
+        # Bias frontal: ângulo da célula relativo à heading do robô.
+        # cos(diff) = +1 à frente, -1 atrás. Mapeia para [FORWARD_BIAS_MIN, 1].
+        ang_to_cell = np.arctan2(dy, dx)
+        diff_ang = np.arctan2(np.sin(ang_to_cell - self.theta),
+                              np.cos(ang_to_cell - self.theta))
+        fwd = (np.cos(diff_ang) + 1.0) * 0.5         # 0..1
+        bias = FORWARD_BIAS_MIN + (1.0 - FORWARD_BIAS_MIN) * fwd
+
+        # Custo: distância / (info_gain × bias). Quanto menor, melhor.
+        # Resultado: prefere clusters grandes, à frente, em distância média.
+        cost = np.where(
+            valid,
+            d / (np.log1p(cluster_size) * bias),
+            np.inf,
+        )
         i = int(np.argmin(cost))
         return float(wx[i]), float(wy[i])
 
@@ -233,21 +293,46 @@ class FrontierExplorer(Node):
             return False
         self.goal_x, self.goal_y = goal
         self.goal_count += 1
-        self.last_goal_time = self.get_clock().now()
+        # Reseta a janela de "travado" — começa a medir progresso a partir
+        # de agora, com a posição atual como referência.
+        self.stuck_ref_x    = self.x
+        self.stuck_ref_y    = self.y
+        self.stuck_ref_time = self.get_clock().now()
         self.get_logger().info(
             f'Goal #{self.goal_count} → ({self.goal_x:+.2f}, {self.goal_y:+.2f})')
         return True
 
     def _goal_watchdog(self):
+        """Reescolhe goal só quando o robô estiver de fato bloqueado."""
         if self.map_data is None or not self.have_pose:
             return
         if self.goal_x is None:
             self._set_new_goal()
             return
-        elapsed = (self.get_clock().now() - self.last_goal_time).nanoseconds / 1e9
-        if elapsed > GOAL_TIMEOUT:
-            self.get_logger().warn('Timeout sem chegar — reescolhendo goal')
+
+        elapsed = (self.get_clock().now()
+                   - self.stuck_ref_time).nanoseconds / 1e9
+        if elapsed < STUCK_WINDOW:
+            return
+
+        moved = float(np.hypot(self.x - self.stuck_ref_x,
+                               self.y - self.stuck_ref_y))
+        if moved < STUCK_DIST:
+            # Bloqueia esta célula por BLACKLIST_TTL: novos goals não
+            # podem cair perto dela. Quebra o ciclo de re-escolher
+            # exatamente o mesmo ponto inalcançável.
+            now_ns = self.get_clock().now().nanoseconds
+            expiry = now_ns + int(BLACKLIST_TTL * 1e9)
+            self.blacklist.append((self.goal_x, self.goal_y, expiry))
+            self.get_logger().warn(
+                f'Travado em ({self.goal_x:+.2f},{self.goal_y:+.2f}) — '
+                f'andou {moved:.2f}m em {elapsed:.1f}s. Blacklist {BLACKLIST_TTL:.0f}s.')
             self._set_new_goal()
+        else:
+            # Houve progresso; rearma a janela.
+            self.stuck_ref_x    = self.x
+            self.stuck_ref_y    = self.y
+            self.stuck_ref_time = self.get_clock().now()
 
     @staticmethod
     def _slew(target: float, prev: float, max_step: float) -> float:

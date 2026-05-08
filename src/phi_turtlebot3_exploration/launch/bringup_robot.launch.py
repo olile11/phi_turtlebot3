@@ -95,7 +95,7 @@ def generate_launch_description():
         SetEnvironmentVariable('ROS_DOMAIN_ID', ROS_DOMAIN_ID),
         DeclareLaunchArgument(
             'use_sim_time',
-            default_value='false',
+            default_value='true',
             description='Robô real → false. Sim → true.',
         ),
         DeclareLaunchArgument(
