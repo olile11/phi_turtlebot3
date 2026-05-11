@@ -89,13 +89,12 @@ def launch_setup(context, *args, **kwargs):
         launch_arguments={'use_sim_time': use_sim_time}.items(),
     )
 
-    # Visualizador da imagem da câmera (substitui o cv2.imshow que travava
-    # o executor). Subscribe em /line_follower/debug_image (ROI + máscara
-    # + centróide). Pra ver o raw, é só trocar o tópico na UI.
+    # Viewer cv2: raw da câmera (esq) + debug com centróide (dir) em uma
+    # janela só. cv2.imshow/waitKey rodam na main thread deste processo
+    # — diferente do line_follower, onde travavam o executor no shutdown.
     image_view_cmd = Node(
-        package='rqt_image_view',
-        executable='rqt_image_view',
-        arguments=['/line_follower/debug_image'],
+        package='phi_turtlebot3_linefollower',
+        executable='viewer',
         output='screen',
     )
 

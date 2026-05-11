@@ -12,11 +12,14 @@ from robot_controller import bot_control
 CAMERA_TOPIC = '/camera/image_raw'
 DEBUG_TOPIC = '/line_follower/debug_image'
 
-# Controle proporcional. Linear constante, angular = -K * erro_pixel.
-# Sinal negativo: error>0 (linha à direita) → angular<0 → giro horário (direita).
-LINEAR_SPEED = 0.08    # m/s
-K_ANGULAR   = 0.005   # rad/s por pixel de erro
-DEADBAND_PX = 5
+# Controle proporcional. Angular = -K * erro_pixel (sinal oposto: erro>0
+# (linha à direita) → angular<0 → giro horário). Linear interpola entre
+# LINEAR_STRAIGHT (reta, erro≈0) e LINEAR_CURVE (curva forte, |erro|≥ERROR_FULL_CURVE).
+LINEAR_STRAIGHT  = 0.14   # m/s — velocidade na reta
+LINEAR_CURVE     = 0.05   # m/s — velocidade dentro da curva
+ERROR_FULL_CURVE = 60     # px — erro a partir do qual usa LINEAR_CURVE
+K_ANGULAR        = 0.006  # rad/s por pixel de erro
+DEADBAND_PX      = 5
 
 
 class LineFollower(Node):
@@ -76,9 +79,15 @@ class LineFollower(Node):
             angular = 0.0
         else:
             angular = -K_ANGULAR * error_x  # sinal oposto = vira em direção à linha
-        self.bc.move(LINEAR_SPEED, angular)
+
+        # Linear: rápido na reta, desacelera proporcional à magnitude do erro.
+        t = min(abs(error_x) / ERROR_FULL_CURVE, 1.0)
+        linear = LINEAR_STRAIGHT * (1.0 - t) + LINEAR_CURVE * t
+
+        self.bc.move(linear, angular)
         self.get_logger().info(
-            f"error={error_x:+d}px  angular={angular:+.3f}", throttle_duration_sec=0.5)
+            f"err={error_x:+d}px  lin={linear:.2f}  ang={angular:+.3f}",
+            throttle_duration_sec=0.5)
 
         self._publish_debug(roi, mask, (cx, cy, c), target_x)
 

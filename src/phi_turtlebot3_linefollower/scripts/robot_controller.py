@@ -17,7 +17,7 @@ class bot_control:
         self.P = 0.004
 
     #move function to move robot
-    def move(self,linear,angular):
+    def move(self, linear, angular):
         self.velocity_msg.header.stamp = self.node.get_clock().now().to_msg()
         self.velocity_msg.twist.linear.x = float(linear)
         self.velocity_msg.twist.angular.z = float(angular)

@@ -25,6 +25,13 @@ install(PROGRAMS
   RENAME line_follower
 )
 
+# Viewer cv2 (raw | debug) em janela única na main thread.
+install(PROGRAMS
+  scripts/view.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME viewer
+)
+
 install(PROGRAMS
   scripts/robot_controller.py
   scripts/Line_follow.py
