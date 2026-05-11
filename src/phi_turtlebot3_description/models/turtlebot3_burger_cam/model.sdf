@@ -321,9 +321,9 @@
     </link>
 
     <link name="camera_link">
+      <pose>0.076 0.0 0.093 0 0 0</pose>
 
       <inertial>
-        <pose>0.076 0.0 0.093 0 0 0</pose>
         <inertia>
           <ixx>0.001</ixx>
           <ixy>0.000</ixy>
@@ -335,8 +335,23 @@
         <mass>0.035</mass>
       </inertial>
 
-      <pose>0.076 0.0 0.093 0 0 0</pose>
-      <sensor name="camera" type="wideanglecamera">
+      <!-- D435 mesh: orientado p/ a lente apontar +X do camera_link (body
+           frame: X-fwd, Y-left, Z-up). Sem rotação no <pose>. -->
+      <visual name="camera_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://turtlebot3_common/meshes/sensors/d435.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <!-- Pinhole. Sensor olha +X do camera_link (body). Publica em
+           gz_frame_id=camera_rgb_frame (optical: X-right, Y-down, Z-fwd),
+           que existe no URDF como child de camera_link com a rotação
+           canônica rpy=(-π/2, 0, -π/2). -->
+      <sensor name="camera" type="camera">
         <always_on>true</always_on>
         <visualize>true</visualize>
         <update_rate>30</update_rate>
@@ -344,7 +359,7 @@
         <gz_frame_id>camera_rgb_frame</gz_frame_id>
         <camera name="pi_cam">
           <camera_info_topic>camera/camera_info</camera_info_topic>
-          <horizontal_fov>3.183</horizontal_fov>
+          <horizontal_fov>1.3962634</horizontal_fov>
           <image>
             <width>320</width>
             <height>240</height>
@@ -354,18 +369,6 @@
             <near>0.03</near>
             <far>100</far>
           </clip>
-          <lens>
-            <type>custom</type>
-            <custom_function>
-              <c1>1.05</c1>
-              <c2>4</c2>
-              <f>1.0</f>
-              <fun>tan</fun>
-            </custom_function>
-            <scale_to_hfov>true</scale_to_hfov>
-            <cutoff_angle>3.1415</cutoff_angle>
-            <env_texture_size>512</env_texture_size>
-          </lens>
         </camera>
       </sensor>
     </link>

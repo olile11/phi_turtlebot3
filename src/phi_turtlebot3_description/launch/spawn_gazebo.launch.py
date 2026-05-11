@@ -18,7 +18,7 @@ WORLD_ALIASES = {
     'house': 'turtlebot3_house',
 }
 
-WORLD_EXTENSIONS = ('.world', '.sdf')
+WORLD_EXTENSIONS = ('.sdf', '.world')
 
 
 def resolve_world_path(world):
