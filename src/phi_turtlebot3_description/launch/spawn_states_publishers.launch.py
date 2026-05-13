@@ -25,32 +25,11 @@ def generate_launch_description():
         f'turtlebot3_{turtlebot3_model}.urdf',
     )
 
-    # As URDFs usam xacro (${namespace}, includes etc.). Sem processar,
-    # robot_state_publisher publica strings literais e o RViz dá
-    # "no transform from ${namespace}base_link". Resolvemos os xacros
-    # aqui para namespace vazio (sem prefixo nos frames).
     robot_description = xacro.process_file(
         urdf_path, mappings={'namespace': ''}
     ).toxml()
 
-    return LaunchDescription([
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='true',
-            description='Use simulation clock.',
-        ),
-        DeclareLaunchArgument(
-            'frame_prefix',
-            default_value='',
-            description='TF frame prefix.',
-        ),
-        DeclareLaunchArgument(
-            'enable_jsp',
-            default_value='true',
-            description='Subir joint_state_publisher. Desligue no robô '
-                        'real (o SBC já publica /joint_states).',
-        ),
-        Node(
+    spawn_robot = Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
             name='robot_state_publisher',
@@ -60,13 +39,20 @@ def generate_launch_description():
                 'robot_description': robot_description,
                 'frame_prefix': frame_prefix,
             }],
-        ),
-        Node(
+    )
+    spawn_joint = Node(
             package='joint_state_publisher',
             executable='joint_state_publisher',
             name='joint_state_publisher',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             condition=IfCondition(enable_jsp),
-        ),
+    )
+    
+    return LaunchDescription([
+        DeclareLaunchArgument('use_sim_time',default_value='true'),
+        DeclareLaunchArgument('frame_prefix',default_value='',),
+        DeclareLaunchArgument('enable_jsp', default_value='true'),
+        spawn_robot,
+        spawn_joint
     ])

@@ -1,12 +1,3 @@
-# Topic bridge ros ↔ gz para o cenário do line follower
-# (turtlebot3_burger_cam + line_world). Tópicos casam com o que o SDF do
-# burger_cam publica (todos sem prefixo de modelo porque o SDF usa <topic>
-# explícito em cada sensor / plugin).
-#
-# Uso:
-#   ros2 run ros_gz_bridge parameter_bridge \
-#       --ros-args -p config_file:=<este_arquivo>.yaml
-
 - ros_topic_name: "clock"
   gz_topic_name: "clock"
   ros_type_name: "rosgraph_msgs/msg/Clock"

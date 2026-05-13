@@ -17,7 +17,7 @@ def generate_launch_description():
     rviz_config = LaunchConfiguration('rviz_config')
     use_sim_time = LaunchConfiguration('use_sim_time')
 
-    spawn_rviz_node = Node(
+    spawn_rviz = Node(
         package='rviz2',
         executable='rviz2',
         name='rviz2',
@@ -29,5 +29,5 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('rviz_config', default_value=join(pkg_share, 'rviz', 'model.rviz')),
         DeclareLaunchArgument('use_sim_time', default_value='false'),
-        spawn_rviz_node,
+        spawn_rviz,
     ])

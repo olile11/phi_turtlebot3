@@ -13,7 +13,7 @@ def generate_launch_description():
 
     slam_params_file = join(description_pkg, 'config', 'slam_config.yaml')
 
-    slam_launch = IncludeLaunchDescription(
+    spawn_slam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             join(slam_toolbox_pkg, 'launch', 'online_async_launch.py')
         ),
@@ -24,10 +24,6 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='false',
-            description='true em sim (Gazebo); false no robô real.',
-        ),
-        slam_launch,
+        DeclareLaunchArgument('use_sim_time',default_value='false'),
+        spawn_slam
     ])

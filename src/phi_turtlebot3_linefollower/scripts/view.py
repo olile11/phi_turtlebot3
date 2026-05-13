@@ -1,10 +1,5 @@
 #! /usr/bin/env python3
-"""Janela única OpenCV com a câmera raw (esq) + segmentação debug (dir).
 
-Roda como nó separado: cv2.imshow + waitKey ficam na main thread (não no
-callback). É por isso que o line_follower não pode chamar cv2.imshow lá
-— travava o executor e o ros2 launch escalava p/ SIGKILL no shutdown.
-"""
 import cv2
 import cv_bridge
 import numpy as np
@@ -15,12 +10,11 @@ from sensor_msgs.msg import Image
 
 RAW_TOPIC = '/camera/image_raw'
 DEBUG_TOPIC = '/line_follower/debug_image'
-WINDOW = 'line_follower view'
-
+WINDOW = 'Robot Vision & Segmentation'
 
 class Viewer(Node):
     def __init__(self):
-        super().__init__('line_follower_viewer')
+        super().__init__('viewer')
         self.bridge = cv_bridge.CvBridge()
         self.raw = None
         self.debug = None
@@ -42,8 +36,6 @@ class Viewer(Node):
                 else np.zeros((h, w, 3), dtype=np.uint8))
         right = np.zeros((h, w, 3), dtype=np.uint8)
         if self.debug is not None:
-            # debug = ROI inferior (40% de baixo); coloca no fundo do canvas
-            # p/ manter o alinhamento vertical com a raw.
             dh, dw = self.debug.shape[:2]
             dh = min(dh, h)
             dw = min(dw, w)
@@ -61,7 +53,6 @@ def main(args=None):
             frame = node.render()
             if frame is not None:
                 cv2.imshow(WINDOW, frame)
-            # waitKey na main thread — única chamada cv2 fora dos callbacks.
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
     except KeyboardInterrupt:

@@ -15,7 +15,6 @@ WORLD_EXTENSIONS = ('.world', '.sdf')
 
 
 def _resolve_world_filename(world_val: str, worlds_dir: str) -> str:
-    """Return world_val with an extension, probing .world then .sdf if none given."""
     if os.path.splitext(world_val)[1]:
         return world_val
     for ext in WORLD_EXTENSIONS:
@@ -25,10 +24,10 @@ def _resolve_world_filename(world_val: str, worlds_dir: str) -> str:
 
 
 def launch_setup(context, *args, **kwargs):
-    pkg_description_dir = os.path.join(
+    description_launch_dir = os.path.join(
         get_package_share_directory(pkg_description_name), 'launch'
     )
-    pkg_exploration_dir = os.path.join(
+    exploration_launch_dir = os.path.join(
         get_package_share_directory(pkg_exploration_name), 'launch'
     )
     worlds_dir = os.path.join(
@@ -43,77 +42,63 @@ def launch_setup(context, *args, **kwargs):
     x_pose = context.launch_configurations['x_pose']
     y_pose = context.launch_configurations['y_pose']
 
-    gazebo_node = IncludeLaunchDescription(
+    spawn_gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_description_dir, 'spawn_gazebo.launch.py')
+            os.path.join(description_launch_dir, 'spawn_gazebo.launch.py')
         ),
         launch_arguments={'world': world_filename}.items(),
     )
 
-    states_nodes = IncludeLaunchDescription(
+    spawn_states_publishers = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_description_dir, 'spawn_states_publishers.launch.py')
+            os.path.join(description_launch_dir, 'spawn_states_publishers.launch.py')
         ),
         launch_arguments={'use_sim_time': use_sim_time}.items(),
     )
 
-    turtlebot_node = IncludeLaunchDescription(
+    spawn_model = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_description_dir, 'spawn_turtlebot3.launch.py')
+            os.path.join(description_launch_dir, 'spawn_turtlebot3.launch.py')
         ),
         launch_arguments={'x_pose': x_pose, 'y_pose': y_pose}.items(),
     )
 
-    slam_node = IncludeLaunchDescription(
+    spawn_slam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_description_dir, 'spawn_slam.launch.py')
+            os.path.join(description_launch_dir, 'spawn_slam.launch.py')
         ),
         launch_arguments={'use_sim_time': use_sim_time}.items(),
     )
 
-    rviz_node = IncludeLaunchDescription(
+    spawn_rviz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_description_dir, 'spawn_rviz.launch.py')
+            os.path.join(description_launch_dir, 'spawn_rviz.launch.py')
         ),
         launch_arguments={'use_sim_time': use_sim_time}.items(),
     )
 
     exploration_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_exploration_dir, 'bringup_exploration.launch.py')
+            os.path.join(exploration_launch_dir, 'bringup_exploration.launch.py')
         ),
         launch_arguments={'use_sim_time': use_sim_time}.items(),
     )
 
-    return [gazebo_node, states_nodes, slam_node, turtlebot_node, rviz_node, exploration_node]
+    return [
+        spawn_gazebo, 
+        spawn_states_publishers, 
+        spawn_model, 
+        spawn_slam, 
+        spawn_rviz, 
+        exploration_node
+    ]
 
 
 def generate_launch_description():
-    world_arg = DeclareLaunchArgument(
-        'world',
-        default_value='obstacles',
-        description=(
-            'World/SDF file name with or without extension '
-            '(e.g. obstacles, turtlebot3_world, house.sdf).'
-        ),
-    )
-
-    x_pose_arg = DeclareLaunchArgument(
-        'x_pose', default_value='0.0',
-        description='Initial X position of the robot'
-    )
-
-    y_pose_arg = DeclareLaunchArgument(
-        'y_pose', default_value='0.0',
-        description='Initial Y position of the robot'
-    )
-
-    use_sim_time_arg = DeclareLaunchArgument('use_sim_time', default_value='true')
-
     return LaunchDescription([
-        world_arg,
-        x_pose_arg,
-        y_pose_arg,
-        use_sim_time_arg,
+        DeclareLaunchArgument('world', default_value='obstacles'),
+        DeclareLaunchArgument('x_pose', default_value='0.0'),
+        DeclareLaunchArgument('y_pose', default_value='0.0'),
+        DeclareLaunchArgument('use_sim_time', default_value='true'),
         OpaqueFunction(function=launch_setup),
     ])

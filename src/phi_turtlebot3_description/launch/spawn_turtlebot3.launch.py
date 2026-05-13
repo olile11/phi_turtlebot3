@@ -35,6 +35,7 @@ def generate_launch_description():
 
     x_pose = LaunchConfiguration('x_pose', default='0.0')
     y_pose = LaunchConfiguration('y_pose', default='0.0')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
     spawn_gazebo_node = Node(
         package='ros_gz_sim',
@@ -63,19 +64,23 @@ def generate_launch_description():
             '-p',
             f'config_file:={bridge_params}',
         ],
+        parameters=[{'use_sim_time': use_sim_time}],
         output='screen',
     )
 
-    start_gazebo_ros_image_bridge_cmd = Node(
+    spawn_image_bridge = Node(
         package='ros_gz_image',
         executable='image_bridge',
         arguments=['/camera/image_raw'],
+        parameters=[{'use_sim_time': use_sim_time}],
         output='screen',
     )
 
     return LaunchDescription([
         DeclareLaunchArgument('x_pose', default_value='0.0'),
         DeclareLaunchArgument('y_pose', default_value='0.0'),
+        DeclareLaunchArgument('use_sim_time', default_value='true'),
         spawn_gazebo_node,
         spawn_bridge_node,
+        spawn_image_bridge,
     ])

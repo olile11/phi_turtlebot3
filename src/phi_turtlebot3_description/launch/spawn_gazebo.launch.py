@@ -46,9 +46,7 @@ def launch_gazebo(context, *args, **kwargs):
     world = resolve_world_path(LaunchConfiguration('world').perform(context))
     verbosity = LaunchConfiguration('gz_verbosity').perform(context)
 
-    headless = LaunchConfiguration('headless').perform(context).lower() == 'true'
-
-    gzserver_cmd = IncludeLaunchDescription(
+    spawn_gzserver = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
@@ -58,10 +56,7 @@ def launch_gazebo(context, *args, **kwargs):
         }.items(),
     )
 
-    if headless:
-        return [gzserver_cmd]
-
-    gzclient_cmd = IncludeLaunchDescription(
+    spawn_gzclient = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
@@ -71,35 +66,16 @@ def launch_gazebo(context, *args, **kwargs):
         }.items(),
     )
 
-    return [gzserver_cmd, gzclient_cmd]
+    return [spawn_gzserver, spawn_gzclient]
 
 
 def generate_launch_description():
     pkg_share = get_package_share_directory(PKG_NAME)
 
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'world',
-            default_value='obstacles',
-            description='World name or path. Examples: obstacles, turtlebot3_world, house, empty.',
-        ),
-        DeclareLaunchArgument(
-            'gz_verbosity',
-            default_value='2',
-            description='Gazebo verbosity level.',
-        ),
-        DeclareLaunchArgument(
-            'headless',
-            default_value='false',
-            description='Whether to run Gazebo in headless mode (no GUI).',
-        ),
-        AppendEnvironmentVariable(
-            'GZ_SIM_RESOURCE_PATH',
-            os.path.join(pkg_share, 'models'),
-        ),
-        AppendEnvironmentVariable(
-            'GZ_SIM_RESOURCE_PATH',
-            os.path.join(pkg_share, 'worlds'),
-        ),
+        DeclareLaunchArgument('world',default_value='obstacles'),
+        DeclareLaunchArgument('gz_verbosity',default_value='2'),
+        AppendEnvironmentVariable('GZ_SIM_RESOURCE_PATH',os.path.join(pkg_share, 'models'),),
+        AppendEnvironmentVariable('GZ_SIM_RESOURCE_PATH',os.path.join(pkg_share, 'worlds'),),
         OpaqueFunction(function=launch_gazebo),
     ])
