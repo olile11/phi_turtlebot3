@@ -18,7 +18,7 @@ ament_python_install_package(${PROJECT_NAME}
 )
 
 install(PROGRAMS
-  scripts/line2.py
+  scripts/line_follower.py
   DESTINATION lib/${PROJECT_NAME}
   RENAME line_follower
 )
