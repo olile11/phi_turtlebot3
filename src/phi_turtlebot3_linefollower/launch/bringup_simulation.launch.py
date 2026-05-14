@@ -47,7 +47,7 @@ def launch_setup(context, *args, **kwargs):
         PythonLaunchDescriptionSource(
             os.path.join(description_launch, 'spawn_turtlebot3.launch.py')
         ),
-        launch_arguments={'x_pose': x_pose, 'y_pose': y_pose}.items(),
+        launch_arguments={'x_pose': x_pose, 'y_pose': y_pose, 'z_yaw': '-1.35'}.items(),
     )
 
     spawn_rviz = IncludeLaunchDescription(

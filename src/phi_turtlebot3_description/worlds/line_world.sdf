@@ -64,7 +64,7 @@
     </model>
 
     <include>
-      <uri>model://black_line</uri>
+      <uri>model://line_follow</uri>
       <pose>0 0 0.001 0 0 0</pose>
     </include>
   </world>

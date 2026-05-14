@@ -3,10 +3,10 @@
   <asset>
     <contributor>
       <author>Blender User</author>
-      <authoring_tool>Blender 4.5.7 LTS commit date:2026-02-16, commit time:13:34, hash:a9874eeece8d</authoring_tool>
+      <authoring_tool>Blender 4.5.9 LTS commit date:2026-04-20, commit time:14:24, hash:8bf95cbd38d1</authoring_tool>
     </contributor>
-    <created>2026-03-12T20:07:15</created>
-    <modified>2026-03-12T20:07:15</modified>
+    <created>2026-05-14T16:12:52</created>
+    <modified>2026-05-14T16:12:52</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -29,23 +29,6 @@
       </profile_COMMON>
     </effect>
     <effect id="Material_015-effect">
-      <profile_COMMON>
-        <technique sid="common">
-          <lambert>
-            <emission>
-              <color sid="emission">0 0 0 1</color>
-            </emission>
-            <diffuse>
-              <color sid="diffuse">0.8 0.8 0.8 1</color>
-            </diffuse>
-            <index_of_refraction>
-              <float sid="ior">1.5</float>
-            </index_of_refraction>
-          </lambert>
-        </technique>
-      </profile_COMMON>
-    </effect>
-    <effect id="Material_011-effect">
       <profile_COMMON>
         <technique sid="common">
           <lambert>
@@ -224,9 +207,6 @@
     <material id="Material_015-material" name="Material.015">
       <instance_effect url="#Material_015-effect"/>
     </material>
-    <material id="Material_011-material" name="Material.011">
-      <instance_effect url="#Material_011-effect"/>
-    </material>
     <material id="Material_017-material" name="Material.017">
       <instance_effect url="#Material_017-effect"/>
     </material>
@@ -259,7 +239,7 @@
     <geometry id="Cube_011-mesh" name="Cube.011">
       <mesh>
         <source id="Cube_011-mesh-positions">
-          <float_array id="Cube_011-mesh-positions-array" count="24">-1 -1 -1 -1 -1 1 -1 1 -1 -1 1 1 1 -1 -1 1 -1 1 1 1 -1 1 1 1</float_array>
+          <float_array id="Cube_011-mesh-positions-array" count="24">-1 -1 -2 -1 -1 -1.19209e-7 -1 1 -2 -1 1 -1.19209e-7 1 -1 -2 1 -1 -1.19209e-7 1 1 -2 1 1 -1.19209e-7</float_array>
           <technique_common>
             <accessor source="#Cube_011-mesh-positions-array" count="8" stride="3">
               <param name="X" type="float"/>
@@ -301,7 +281,7 @@
     <geometry id="Cube_010-mesh" name="Cube.010">
       <mesh>
         <source id="Cube_010-mesh-positions">
-          <float_array id="Cube_010-mesh-positions-array" count="24">-1 -1 -1 -1 -1 1 -1 1 -1 -1 1 1 1 -1 -1 1 -1 1 1 1 -1 1 1 1</float_array>
+          <float_array id="Cube_010-mesh-positions-array" count="24">-1 -1 -2 -1 -1 -1.19209e-7 -1 1 -2 -1 1 -1.19209e-7 1 -1 -2 1 -1 -1.19209e-7 1 1 -2 1 1 -1.19209e-7</float_array>
           <technique_common>
             <accessor source="#Cube_010-mesh-positions-array" count="8" stride="3">
               <param name="X" type="float"/>
@@ -336,48 +316,6 @@
           <input semantic="VERTEX" source="#Cube_010-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Cube_010-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Cube_010-mesh-map-0" offset="2" set="0"/>
-          <p>1 0 0 2 0 1 0 0 2 3 1 3 6 1 4 2 1 5 7 2 6 4 2 7 6 2 8 5 3 9 0 3 10 4 3 11 6 4 12 0 4 13 2 4 14 3 5 15 5 5 16 7 5 17 1 6 18 3 6 19 2 6 20 3 7 21 7 7 22 6 7 23 7 8 24 5 8 25 4 8 26 5 9 27 1 9 28 0 9 29 6 10 30 4 10 31 0 10 32 3 11 33 1 11 34 5 11 35</p>
-        </triangles>
-      </mesh>
-    </geometry>
-    <geometry id="Cube_009-mesh" name="Cube.009">
-      <mesh>
-        <source id="Cube_009-mesh-positions">
-          <float_array id="Cube_009-mesh-positions-array" count="24">-1 -1 -1 -1 -1 1 -1 1 -1 -1 1 1 1 -1 -1 1 -1 1 1 1 -1 1 1 1</float_array>
-          <technique_common>
-            <accessor source="#Cube_009-mesh-positions-array" count="8" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Cube_009-mesh-normals">
-          <float_array id="Cube_009-mesh-normals-array" count="36">-1 0 0 0 1 0 1 0 0 0 -1 0 0 0 -1 0 0 1 -1 0 0 0 1 0 1 0 0 0 -1 0 0 0 -1 0 0 1</float_array>
-          <technique_common>
-            <accessor source="#Cube_009-mesh-normals-array" count="12" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Cube_009-mesh-map-0">
-          <float_array id="Cube_009-mesh-map-0-array" count="72">0.625 0 0.375 0.25 0.375 0 0.625 0.25 0.375 0.5 0.375 0.25 0.625 0.5 0.375 0.75 0.375 0.5 0.625 0.75 0.375 1 0.375 0.75 0.375 0.5 0.125 0.75 0.125 0.5 0.875 0.5 0.625 0.75 0.625 0.5 0.625 0 0.625 0.25 0.375 0.25 0.625 0.25 0.625 0.5 0.375 0.5 0.625 0.5 0.625 0.75 0.375 0.75 0.625 0.75 0.625 1 0.375 1 0.375 0.5 0.375 0.75 0.125 0.75 0.875 0.5 0.875 0.75 0.625 0.75</float_array>
-          <technique_common>
-            <accessor source="#Cube_009-mesh-map-0-array" count="36" stride="2">
-              <param name="S" type="float"/>
-              <param name="T" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <vertices id="Cube_009-mesh-vertices">
-          <input semantic="POSITION" source="#Cube_009-mesh-positions"/>
-        </vertices>
-        <triangles material="Material_011-material" count="12">
-          <input semantic="VERTEX" source="#Cube_009-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#Cube_009-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#Cube_009-mesh-map-0" offset="2" set="0"/>
           <p>1 0 0 2 0 1 0 0 2 3 1 3 6 1 4 2 1 5 7 2 6 4 2 7 6 2 8 5 3 9 0 3 10 4 3 11 6 4 12 0 4 13 2 4 14 3 5 15 5 5 16 7 5 17 1 6 18 3 6 19 2 6 20 3 7 21 7 7 22 6 7 23 7 8 24 5 8 25 4 8 26 5 9 27 1 9 28 0 9 29 6 10 30 4 10 31 0 10 32 3 11 33 1 11 34 5 11 35</p>
         </triangles>
       </mesh>
@@ -553,7 +491,7 @@
     <geometry id="Cube_004-mesh" name="Cube.004">
       <mesh>
         <source id="Cube_004-mesh-positions">
-          <float_array id="Cube_004-mesh-positions-array" count="24">-1 -1 -1 -1 -1 1 -1 1 -1 -1 1 1 1 -1 -1 1 -1 1 1 1 -1 1 1 1</float_array>
+          <float_array id="Cube_004-mesh-positions-array" count="24">-1 -1 -2 -1 -1 -1.19209e-7 -1 1 -2 -1 1 -1.19209e-7 1 -1 -2 1 -1 -1.19209e-7 1 1 -2 1 1 -1.19209e-7</float_array>
           <technique_common>
             <accessor source="#Cube_004-mesh-positions-array" count="8" stride="3">
               <param name="X" type="float"/>
@@ -764,7 +702,7 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="Cube_011" name="Cube.011" type="NODE">
-        <matrix sid="transform">1 0 0 -1.39242 0 1 0 -1.94237 0 0 1 1 0 0 0 1</matrix>
+        <matrix sid="transform">0.5 0 0 0.4504884 0 0.5 0 -1.503582 0 0 0.5 1 0 0 0 1</matrix>
         <instance_geometry url="#Cube_011-mesh" name="Cube.011">
           <bind_material>
             <technique_common>
@@ -776,7 +714,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_010" name="Cube.010" type="NODE">
-        <matrix sid="transform">1 0 0 2.78484 0 1 0 -0.222319 0 0 1 1 0 0 0 1</matrix>
+        <matrix sid="transform">0.5 0 0 2.78484 0 0.5 0 1.269559 0 0 0.5 1 0 0 0 1</matrix>
         <instance_geometry url="#Cube_010-mesh" name="Cube.010">
           <bind_material>
             <technique_common>
@@ -787,20 +725,8 @@
           </bind_material>
         </instance_geometry>
       </node>
-      <node id="Cube_009" name="Cube.009" type="NODE">
-        <matrix sid="transform">1 0 0 1.75515 0 1 0 3.59806 0 0 1 1 0 0 0 1</matrix>
-        <instance_geometry url="#Cube_009-mesh" name="Cube.009">
-          <bind_material>
-            <technique_common>
-              <instance_material symbol="Material_011-material" target="#Material_011-material">
-                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
-              </instance_material>
-            </technique_common>
-          </bind_material>
-        </instance_geometry>
-      </node>
       <node id="Cube_008" name="Cube.008" type="NODE">
-        <matrix sid="transform">1 0 0 3.194375 0 1 0 -4.352775 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.5 0 0 3.194375 0 0.5 0 -2.977906 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube_008-mesh" name="Cube.008">
           <bind_material>
             <technique_common>
@@ -812,7 +738,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_007" name="Cube.007" type="NODE">
-        <matrix sid="transform">1 0 0 -5.089939 0 1 0 -0.4563394 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.5 0 0 -3.451798 0 0.5 0 -0.4563394 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube_007-mesh" name="Cube.007">
           <bind_material>
             <technique_common>
@@ -824,7 +750,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_006" name="Cube.006" type="NODE">
-        <matrix sid="transform">1 0 0 -4.001745 0 1 0 3.826229 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.5 0 0 -4.001745 0 0.5 0 3.826229 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube_006-mesh" name="Cube.006">
           <bind_material>
             <technique_common>
@@ -836,7 +762,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_005" name="Cube.005" type="NODE">
-        <matrix sid="transform">1 0 0 -3.510302 0 1 0 -5.791998 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.5 0 0 -2.632727 0 0.5 0 -3.100767 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube_005-mesh" name="Cube.005">
           <bind_material>
             <technique_common>
@@ -848,7 +774,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_004" name="Cube.004" type="NODE">
-        <matrix sid="transform">1 0 0 5.932411 0 1 0 5.125041 0 0 1 1 0 0 0 1</matrix>
+        <matrix sid="transform">0.5 0 0 0.198918 0 0.5 0 3.457647 0 0 0.5 1 0 0 0 1</matrix>
         <instance_geometry url="#Cube_004-mesh" name="Cube.004">
           <bind_material>
             <technique_common>
@@ -860,7 +786,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_003" name="Cube.003" type="NODE">
-        <matrix sid="transform">0.05 0 0 -9 0 9.1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.05 0 0 -4.963153 0 5 0 0 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube_003-mesh" name="Cube.003">
           <bind_material>
             <technique_common>
@@ -872,7 +798,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_002" name="Cube.002" type="NODE">
-        <matrix sid="transform">0.05 0 0 9 0 9.1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.05 0 0 5.080163 0 5 0 0 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube_002-mesh" name="Cube.002">
           <bind_material>
             <technique_common>
@@ -884,7 +810,7 @@
         </instance_geometry>
       </node>
       <node id="Cube_001" name="Cube.001" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 1 0 -9 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.5494505 0 0 0 0 1 0 -4.963152 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube_001-mesh" name="Cube.001">
           <bind_material>
             <technique_common>
@@ -896,7 +822,7 @@
         </instance_geometry>
       </node>
       <node id="Cube" name="Cube" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 1 0 9 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">0.5494505 0 0 0 0 1 0 5.021658 0 0 0.5 0 0 0 0 1</matrix>
         <instance_geometry url="#Cube-mesh" name="Cube">
           <bind_material>
             <technique_common>

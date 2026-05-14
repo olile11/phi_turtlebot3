@@ -35,6 +35,8 @@ def generate_launch_description():
 
     x_pose = LaunchConfiguration('x_pose', default='0.0')
     y_pose = LaunchConfiguration('y_pose', default='0.0')
+    z_yaw = LaunchConfiguration('z_yaw', default='0.0')
+    
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
     spawn_gazebo_node = Node(
@@ -45,7 +47,8 @@ def generate_launch_description():
             '-file', urdf_path,
             '-x', x_pose,
             '-y', y_pose,
-            '-z', '0.01'
+            '-z', '0.01',
+            '-Y', z_yaw
         ],
         output='screen',
     )
@@ -79,6 +82,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('x_pose', default_value='0.0'),
         DeclareLaunchArgument('y_pose', default_value='0.0'),
+        DeclareLaunchArgument('z_yaw', default_value='0.0'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         spawn_gazebo_node,
         spawn_bridge_node,

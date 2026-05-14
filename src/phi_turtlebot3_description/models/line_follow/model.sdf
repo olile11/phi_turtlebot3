@@ -1,22 +1,22 @@
 <?xml version ="1.0"?>
 <sdf version="1.6">
-  <model name="black_line">
+  <model name="line_follow">
     <pose>-3.14159265359 4 0  1.57079632679 0 0</pose>
     <static>true</static>
     <link name="link">
-      <collision name="colision1">
+      <collision name="collision">
         <geometry>
           <mesh>
-            <uri>model://black_line/meshes/black_line.dae</uri>
+            <uri>model://line_follow/meshes/tiny_line_follow.dae</uri>
           </mesh> 
         </geometry>
       </collision>
 
-      <visual name="visual1">
+      <visual name="visual">
         <cast_shadows>true</cast_shadows>
         <geometry>
           <mesh>
-            <uri>model://black_line/meshes/black_line.dae</uri>
+            <uri>model://line_follow/meshes/tiny_line_follow.dae</uri>
           </mesh>
         </geometry>
       </visual>

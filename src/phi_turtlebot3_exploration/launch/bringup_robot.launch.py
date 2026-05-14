@@ -40,7 +40,7 @@ def generate_launch_description():
 
     spawn_slam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(description_launch_dir, 'spawn_slam.launch.py')
+            os.path.join(description_launch, 'spawn_slam.launch.py')
         ),
         launch_arguments={'use_sim_time': use_sim_time}.items(),
         condition=IfCondition(open_slam),
